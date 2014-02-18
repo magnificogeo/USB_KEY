@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <TextView
+    android:id="@+id/bluetoothstate" 
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    />
+<!--
+    <Button android:id="@+id/btnStartService"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/start_service"
+            android:onClick="startService"/>
+
+    <Button android:id="@+id/btnStopService"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stop_service"
+            android:onClick="stopService" />
+-->
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="IDLE"
+            android:id="@+id/btconnectedstate" android:layout_gravity="center_horizontal"/>
+    <Button
+            android:id="@+id/pingdevice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ping Device"
+            android:layout_gravity="center_horizontal"/>
+    <Button
+    android:id="@+id/scandevice" 
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:text="Scan for USB_KEY"
+    android:enabled="false"
+    />
+
+
+<ListView
+    android:id="@+id/devicesfound" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    />
+</LinearLayout>
