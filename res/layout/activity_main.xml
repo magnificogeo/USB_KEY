@@ -22,30 +22,40 @@
             android:text="@string/stop_service"
             android:onClick="stopService" />
 -->
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="IDLE"
-            android:id="@+id/btconnectedstate" android:layout_gravity="center_horizontal"/>
     <Button
-            android:id="@+id/pingdevice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ping Device"
-            android:layout_gravity="center_horizontal"/>
-    <Button
-    android:id="@+id/scandevice" 
+    android:id="@+id/connectdev"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content"
-    android:text="Scan for USB_KEY"
+    android:text="Connect to USB_KEY"
     android:enabled="false"
     />
 
-
-<ListView
-    android:id="@+id/devicesfound" 
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent"
+    <Button
+            android:id="@+id/disconnectdev"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Disonnect from USB_KEY"
+            android:enabled="false"
     />
+
+    <Button
+            android:id="@+id/btnencrypt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Encrypt"
+            android:enabled="false"
+            />
+
+    <Button
+            android:id="@+id/btndecrypt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Decrypt"
+            android:enabled="false"
+            />
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/myTextbox"/>
+
 </LinearLayout>
