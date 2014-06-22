@@ -6,4 +6,6 @@
 .DS_Store
 .classpath
 .project
-
+proguard*
+project.properties
+usb_key.iml
