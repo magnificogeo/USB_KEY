@@ -28,6 +28,9 @@ import java.util.UUID;
 
 public class MainActivity extends Activity {
 
+    /**
+     * Variable and type declaration
+     */
     String btToastLabel;
     BluetoothAdapter bluetoothAdapter;
     BluetoothSocket btSocket;
@@ -51,8 +54,12 @@ public class MainActivity extends Activity {
     TextView stateBluetooth;
     Button btnDisconnectDevice;
     Button btnDecrypt;
-    Button btnEncrypt;
+    Button btnsilenceNotifications;
     ImageView lockStatus;
+
+    /**
+     * End of Variable and type declaration
+     */
 
     /** Called when the activity is first created. **/
     @Override
@@ -66,14 +73,13 @@ public class MainActivity extends Activity {
         //btnEncrypt = (Button)findViewById(R.id.btnencrypt);
         btnDecrypt = (Button)findViewById(R.id.btndecrypt);
 
+        btnsilenceNotifications = (Button)findViewById(R.id.btnsilenceNotifications);
 
 
         stateBluetooth = (TextView)findViewById(R.id.bluetoothstate);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-
         lockStatus = (ImageView) findViewById(R.id.lockStatusView);
-
 
         CheckBlueToothState();
 
@@ -81,6 +87,7 @@ public class MainActivity extends Activity {
         btnConnectDevice.setOnClickListener(btnConnectDeviceOnClickListener);
         btnDisconnectDevice.setOnClickListener(btnDisconnectDeviceOnClickListener);
         btnDecrypt.setOnClickListener(btnDecryptOnClickListener);
+        btnsilenceNotifications.setOnClickListener(btnsilenceNotificationsOnClickListener);
 
 
         registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
@@ -122,7 +129,7 @@ public class MainActivity extends Activity {
             }
         }
 
-    private  Button.OnClickListener btnDecryptOnClickListener = new Button.OnClickListener() {
+    private Button.OnClickListener btnDecryptOnClickListener = new Button.OnClickListener() {
 
         @Override
         public void onClick(View arg0) {
@@ -168,6 +175,27 @@ public class MainActivity extends Activity {
         }
     };
 
+    private Button.OnClickListener btnsilenceNotificationsOnClickListener = new Button.OnClickListener() {
+
+        @Override
+        public void onClick(View arg0) {
+
+            try {
+                silenceNotification();
+            } catch ( IOException io_exception ) {
+                btToastLabel = "Unable to Disconnect from USB_KEY";
+                Toast.makeText(getApplicationContext(), btToastLabel, Toast.LENGTH_LONG).show();
+            }
+        }
+
+    };
+
+    void silenceNotification() {
+        // silence notifications here
+        // change button text
+
+    }
+
     private Button.OnClickListener btnDisconnectDeviceOnClickListener = new Button.OnClickListener() {
 
         @Override
@@ -182,8 +210,7 @@ public class MainActivity extends Activity {
         }
     };
 
-    private Button.OnClickListener btnConnectDeviceOnClickListener
-            = new Button.OnClickListener()
+    private Button.OnClickListener btnConnectDeviceOnClickListener  = new Button.OnClickListener()
     {
 
         @Override

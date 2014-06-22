@@ -73,6 +73,21 @@
             android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
             android:textStyle="bold"
             />
+
+    <Button
+            android:id="@+id/btnsilenceNotifications"
+            android:layout_width="285dp"
+            android:layout_height="50dp"
+            android:text="Turn off Notifications"
+            android:enabled="false"
+            android:singleLine="false" android:background="@drawable/roundedbuttonshape3" android:clickable="false" android:typeface="sans"
+            android:layout_gravity="center_horizontal"
+            android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
+            android:textStyle="bold"
+            />
+
+
+
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
