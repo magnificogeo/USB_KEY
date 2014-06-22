@@ -3,11 +3,16 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="#2C3D4F"
     >
+
+    <!-- //android:background="#06A8F0" -->
+
     <TextView
     android:id="@+id/bluetoothstate" 
     android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
     />
 <!--
     <Button android:id="@+id/btnStartService"
@@ -20,42 +25,64 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/stop_service"
-            android:onClick="stopService" />
+            android:onClick="stopService" />FDA65F
 -->
     <Button
     android:id="@+id/connectdev"
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content"
-    android:text="Connect to USB_KEY"
-    android:enabled="false"
-    />
+    android:layout_width="285dp"
+    android:layout_height="50dp"
+    android:text="Connect"
+    android:enabled="true"
+    android:singleLine="false" android:background="@drawable/roundedbuttonshape" android:clickable="false" android:typeface="sans"
+    android:layout_gravity="center_horizontal"
+    android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
+    android:textStyle="bold"/>
 
     <Button
             android:id="@+id/disconnectdev"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Disonnect from USB_KEY"
-            android:enabled="false"
-    />
+            android:layout_width="285dp"
+            android:layout_height="50dp"
+            android:text="Disconnect"
+            android:enabled="true"
+            android:singleLine="false" android:background="@drawable/roundedbuttonshape" android:clickable="false" android:typeface="sans"
+            android:layout_gravity="center_horizontal"
+            android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
+            android:textStyle="bold"
+            />
 
-    <Button
+    <!-- <Button
             android:id="@+id/btnencrypt"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="285dp"
+            android:layout_height="50dp"
             android:text="Encrypt"
             android:enabled="false"
-            />
+            android:singleLine="false" android:background="@drawable/roundedbuttonshape2" android:clickable="false" android:typeface="sans"
+            android:layout_gravity="center_horizontal"
+            android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
+            android:textStyle="bold"
+            /> -->
 
     <Button
             android:id="@+id/btndecrypt"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="285dp"
+            android:layout_height="50dp"
             android:text="Decrypt"
             android:enabled="false"
+            android:singleLine="false" android:background="@drawable/roundedbuttonshape2" android:clickable="false" android:typeface="sans"
+            android:layout_gravity="center_horizontal"
+            android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
+            android:textStyle="bold"
             />
-    <EditText
-            android:layout_width="match_parent"
+    <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/myTextbox"/>
+            android:id="@+id/lockStatusView" android:layout_gravity="center_horizontal" android:layout_marginTop="50dp"
+            android:background="@drawable/lock" android:baselineAlignBottom="true"/>
+    <!-- <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/myTextbox" android:layout_marginTop="20dp" android:background="@drawable/textfield"
+            android:autoText="true"/> -->
+
 
 </LinearLayout>

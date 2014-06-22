@@ -16,6 +16,9 @@ import android.os.*;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +38,6 @@ public class MainActivity extends Activity {
     byte[] readBuffer;
     int readBufferPosition;
     volatile boolean stopWorker;
-    EditText myTextbox;
 
     int REQUEST_ENABLE_BT = 1;
     String TAG = "george_debug"; // This is a debug tag used to filter debug messages
@@ -50,7 +52,7 @@ public class MainActivity extends Activity {
     Button btnDisconnectDevice;
     Button btnDecrypt;
     Button btnEncrypt;
-
+    ImageView lockStatus;
 
     /** Called when the activity is first created. **/
     @Override
@@ -61,18 +63,25 @@ public class MainActivity extends Activity {
 
         btnConnectDevice = (Button)findViewById(R.id.connectdev);
         btnDisconnectDevice = (Button)findViewById(R.id.disconnectdev);
-        btnEncrypt = (Button)findViewById(R.id.btnencrypt);
+        //btnEncrypt = (Button)findViewById(R.id.btnencrypt);
         btnDecrypt = (Button)findViewById(R.id.btndecrypt);
 
-        myTextbox = (EditText)findViewById(R.id.myTextbox);
+
+
         stateBluetooth = (TextView)findViewById(R.id.bluetoothstate);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+
+        lockStatus = (ImageView) findViewById(R.id.lockStatusView);
+
+
         CheckBlueToothState();
 
+        //myTextbox = (EditText)findViewById(R.id.myTextbox);
         btnConnectDevice.setOnClickListener(btnConnectDeviceOnClickListener);
         btnDisconnectDevice.setOnClickListener(btnDisconnectDeviceOnClickListener);
-        btnEncrypt.setOnClickListener(btnEncryptOnClickListener);
+        btnDecrypt.setOnClickListener(btnDecryptOnClickListener);
+
 
         registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
         registerReceiver(ActionDiscoveryFinishedReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
@@ -113,18 +122,50 @@ public class MainActivity extends Activity {
             }
         }
 
-    private  Button.OnClickListener btnEncryptOnClickListener = new Button.OnClickListener() {
+    private  Button.OnClickListener btnDecryptOnClickListener = new Button.OnClickListener() {
 
-           @Override
-           public void onClick(View arg0) {
+        @Override
+        public void onClick(View arg0) {
 
-               try {
-                   sendData();
-               } catch ( IOException io ) {
-                   //
-               }
+            AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 
-           }
+            alert.setTitle("Input your passkey to decrypt");
+            //alert.setMessage("Message");
+
+            // Set an EditText view to get user input
+            final EditText textToDev = new EditText(MainActivity.this);
+            alert.setView(textToDev);
+
+            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+
+                    try {
+                        sendData(textToDev);
+                    } catch ( Exception io ) {
+                        //
+                    }
+                }
+            });
+
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+
+            alert.show();
+
+            /*
+            try {
+
+                sendData();
+
+            } catch ( IOException io ) {
+                btToastLabel = "Unable to send Data, try again";
+                Toast.makeText(getApplicationContext(), btToastLabel, Toast.LENGTH_LONG).show();
+            }*/
+
+        }
     };
 
     private Button.OnClickListener btnDisconnectDeviceOnClickListener = new Button.OnClickListener() {
@@ -148,6 +189,9 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View arg0) {
             // TODO Auto-generated method stub
+            btToastLabel = "Searching and Connecting...";
+            Toast.makeText(getApplicationContext(), btToastLabel, Toast.LENGTH_LONG).show();
+
             Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
             if(pairedDevices.size() > 0)
             {
@@ -160,7 +204,6 @@ public class MainActivity extends Activity {
                     }
                 }
             }
-
 
             //ParcelUuid ParcelUuid[];
 
@@ -178,8 +221,10 @@ public class MainActivity extends Activity {
             try {
                 initiate_bt_connection();
                 btnDisconnectDevice.setEnabled(true);
-                btnEncrypt.setEnabled(true);
+               // btnEncrypt.setEnabled(true);
                 btnDecrypt.setEnabled(true);
+
+
             } catch ( IOException io ) {
                 btToastLabel = "Unable to connect to USB_KEY";
                 Toast.makeText(getApplicationContext(), btToastLabel, Toast.LENGTH_LONG).show();
@@ -240,8 +285,8 @@ public class MainActivity extends Activity {
                                         {
                                             btToastLabel = data;
                                             if ( data.equals("samantha")) {
-                                            Toast.makeText(getApplicationContext(), "Samantha damn pretty!",
-                                                    Toast.LENGTH_LONG).show();
+                                                ///
+
 
                                             }
                                         }
@@ -265,21 +310,29 @@ public class MainActivity extends Activity {
         workerThread.start();
     }
 
-    void sendData() throws IOException
+    void sendData(EditText textToDev) throws IOException
     {
 
-        String msg = myTextbox.getText().toString();
+        String msg = textToDev.getText().toString();
+
         //String msg = "\n";
         //msg += "\n";
         btOutputStream.write(msg.getBytes());
         btToastLabel = "Data sent";
+        Log.v(TAG, "MSG is" + msg);
         Toast.makeText(getApplicationContext(), btToastLabel,
                 Toast.LENGTH_LONG).show();
+
+
+        lockStatus.setBackgroundResource(R.drawable.unlock);
+
+        bluetoothAdapter.startDiscovery();
+
     }
 
     void closeBT() throws IOException
     {
-        //stopWorker = true;
+        stopWorker = true;
         btOutputStream.close();
         btInputStream.close();
         btSocket.close();
@@ -287,6 +340,10 @@ public class MainActivity extends Activity {
         Toast.makeText(getApplicationContext(), btToastLabel,
                 Toast.LENGTH_LONG).show();
         bluetooth_connected_status = 0;
+        bluetooth_found_status = 0;
+
+        lockStatus.setBackgroundResource(R.drawable.lock);
+
     }
 
     @Override
@@ -308,15 +365,31 @@ public class MainActivity extends Activity {
 
             if(BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                short rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);;
+                short rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);
+
                 if ( device.getAddress().equals(MAC_ADDR) ) {
 
                     Log.d(TAG, "Detected USB_KEY");
                     Log.v(TAG, "RSSI is " + rssi);
                     bluetooth_found_distance = rssi;
-                    Toast.makeText(getApplicationContext(), "USB_KEY detected RSSI:" + rssi, Toast.LENGTH_SHORT).show();
-                    bluetooth_found_status = 1;
+                    if ((-50) - rssi > 17) {
+                        bluetooth_found_status = 0;
 
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                        r.play();
+                        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(5000);
+                        Toast.makeText(getApplicationContext(), "USB_KEY is either out of range or cannot be detected! It's last detected distance is " + bluetooth_found_distance, Toast.LENGTH_SHORT).show();
+
+                        //bluetoothAdapter.cancelDiscovery();
+
+                    } else {
+                        bluetooth_found_status = 1;
+                        Toast.makeText(getApplicationContext(), "USB_KEY detected RSSI:" + rssi, Toast.LENGTH_SHORT).show();
+
+                        bluetoothAdapter.cancelDiscovery();
+                    }
                 }
             }
         }};
@@ -328,7 +401,7 @@ public class MainActivity extends Activity {
         {
             // TODO Auto-generated method stub
             String action = intent.getAction();
-            if ( bluetooth_found_status == 0 && bluetooth_connected_status == 0 )
+            if ( bluetooth_found_status == 0) //&& bluetooth_connected_status == 0)
             {
                 Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
@@ -336,12 +409,13 @@ public class MainActivity extends Activity {
                 Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(5000);
                 Toast.makeText(getApplicationContext(), "USB_KEY is either out of range or cannot be detected! It's last detected distance is " + bluetooth_found_distance, Toast.LENGTH_SHORT).show();
+
             }
 
-            if ( bluetooth_found_status == 1 )
+           /* if ( bluetooth_found_status == 1 )
             {
                 bluetooth_found_status = 0; // reset found flag
-            }
+            } */
 
             bluetoothAdapter.startDiscovery(); // reloop discovery
 
