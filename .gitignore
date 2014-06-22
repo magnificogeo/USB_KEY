@@ -1,0 +1,9 @@
+/.settings
+/assets
+/bin
+/gen
+/libs
+.DS_Store
+.classpath
+.project
+
