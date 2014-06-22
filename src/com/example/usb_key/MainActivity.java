@@ -1,6 +1,5 @@
 package com.example.usb_key;
 
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -20,6 +19,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,9 +32,13 @@ public class MainActivity extends Activity {
      * Variable and type declaration
      */
     String btToastLabel;
+
     BluetoothAdapter bluetoothAdapter;
     BluetoothSocket btSocket;
     BluetoothDevice btDevice;
+
+    Bluetooth_Class Bluetooth_Instance;
+
     OutputStream btOutputStream;
     InputStream btInputStream;
     Thread workerThread;
@@ -68,31 +72,50 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnConnectDevice = (Button)findViewById(R.id.connectdev);
-        btnDisconnectDevice = (Button)findViewById(R.id.disconnectdev);
-        //btnEncrypt = (Button)findViewById(R.id.btnencrypt);
-        btnDecrypt = (Button)findViewById(R.id.btndecrypt);
+        /**
+         * Linking View objects to respective resource Ids
+         */
 
-        btnsilenceNotifications = (Button)findViewById(R.id.btnsilenceNotifications);
+            // Linking Button to it's respective resource ids
+            btnConnectDevice = (Button)findViewById(R.id.connectdev);
+            btnDisconnectDevice = (Button)findViewById(R.id.disconnectdev);
+            //btnEncrypt = (Button)findViewById(R.id.btnencrypt);
+            btnDecrypt = (Button)findViewById(R.id.btndecrypt);
+            btnsilenceNotifications = (Button)findViewById(R.id.btnsilenceNotifications);
 
+            // Linking Textview to it's respective resource ids
+            stateBluetooth = (TextView)findViewById(R.id.bluetoothstate);
 
-        stateBluetooth = (TextView)findViewById(R.id.bluetoothstate);
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            // Linking ImageView to it's respective resource ids
+            lockStatus = (ImageView) findViewById(R.id.lockStatusView);
 
-        lockStatus = (ImageView) findViewById(R.id.lockStatusView);
+            // Linking EditTExt to it's resource resource ids
+            //myTextbox = (EditText)findViewById(R.id.myTextbox);
 
-        CheckBlueToothState();
+        /**
+         * Ending of linking view objects
+         */
 
-        //myTextbox = (EditText)findViewById(R.id.myTextbox);
+        // Instantiate Bluetooth Class and functions once
+        Bluetooth_Instance = new Bluetooth_Class();
+
+        // Set the Bluetooth Adapter
+        bluetoothAdapter = Bluetooth_Instance.getBluetoothAdapter();
+
+        // Invoke function to check bluetooth state
+        checkBluetoothState();
+
+        // Linking View Objects to a ClickListener
         btnConnectDevice.setOnClickListener(btnConnectDeviceOnClickListener);
         btnDisconnectDevice.setOnClickListener(btnDisconnectDeviceOnClickListener);
         btnDecrypt.setOnClickListener(btnDecryptOnClickListener);
         btnsilenceNotifications.setOnClickListener(btnsilenceNotificationsOnClickListener);
 
-
+        // Registering Custom Broadcast Receiver functions for intent
         registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
         registerReceiver(ActionDiscoveryFinishedReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
 
+        // Start Bluetooth Discovery
         bluetoothAdapter.startDiscovery();
 
     }
@@ -104,30 +127,24 @@ public class MainActivity extends Activity {
 
     }
 
-    private void CheckBlueToothState(){
-        if (bluetoothAdapter == null)
-        {
+    private void checkBluetoothState(){
+        if (bluetoothAdapter == null) {
             stateBluetooth.setText("Bluetooth is not supported on this device.");
-        } else
-            {
-            if (bluetoothAdapter.isEnabled())
-            {
-                if(bluetoothAdapter.isDiscovering())
-                {
+        } else {
+            if (bluetoothAdapter.isEnabled()) {
+                if(bluetoothAdapter.isDiscovering()) {
                     stateBluetooth.setText("Bluetooth is currently in device discovery process.");
-                } else
-                    {
-                        stateBluetooth.setText("Bluetooth is Enabled.");
-                        btnConnectDevice.setEnabled(true);
-                    }
-            } else
-                {
-                    stateBluetooth.setText("Bluetooth is NOT Enabled!");
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                } else {
+                    stateBluetooth.setText("Bluetooth is Enabled.");
+                    btnConnectDevice.setEnabled(true);
                 }
+            } else {
+                stateBluetooth.setText("Bluetooth is NOT Enabled!");
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             }
         }
+    }
 
     private Button.OnClickListener btnDecryptOnClickListener = new Button.OnClickListener() {
 
@@ -162,16 +179,6 @@ public class MainActivity extends Activity {
 
             alert.show();
 
-            /*
-            try {
-
-                sendData();
-
-            } catch ( IOException io ) {
-                btToastLabel = "Unable to send Data, try again";
-                Toast.makeText(getApplicationContext(), btToastLabel, Toast.LENGTH_LONG).show();
-            }*/
-
         }
     };
 
@@ -182,15 +189,15 @@ public class MainActivity extends Activity {
 
             try {
                 silenceNotification();
-            } catch ( IOException io_exception ) {
-                btToastLabel = "Unable to Disconnect from USB_KEY";
+            } catch ( IOException btnsilenceNotificationsException ) {
+                btToastLabel = "Unable to toggle this option";
                 Toast.makeText(getApplicationContext(), btToastLabel, Toast.LENGTH_LONG).show();
             }
         }
 
     };
 
-    void silenceNotification() {
+    void silenceNotification() throws IOException {
         // silence notifications here
         // change button text
 
@@ -203,12 +210,29 @@ public class MainActivity extends Activity {
 
             try {
                 closeBT();
-            } catch ( IOException io ) {
+            } catch ( IOException btnDisconnectDeviceException ) {
                 btToastLabel = "Unable to Disconnect from USB_KEY";
                 Toast.makeText(getApplicationContext(), btToastLabel, Toast.LENGTH_LONG).show();
             }
         }
     };
+
+    void closeBT() throws IOException
+    {
+        stopWorker = true;
+        btOutputStream.close();
+        btInputStream.close();
+        btSocket.close();
+        btToastLabel = "Disconnected from USB_KEY";
+        Toast.makeText(getApplicationContext(), btToastLabel,
+                Toast.LENGTH_LONG).show();
+        bluetooth_connected_status = 0;
+        bluetooth_found_status = 0;
+
+        lockStatus.setBackgroundResource(R.drawable.lock);
+
+    }
+
 
     private Button.OnClickListener btnConnectDeviceOnClickListener  = new Button.OnClickListener()
     {
@@ -244,13 +268,11 @@ public class MainActivity extends Activity {
             Toast.makeText(getApplicationContext(), btToastLabel,Toast.LENGTH_SHORT).show();
             bluetoothAdapter.startDiscovery();
 
-
             try {
                 initiate_bt_connection();
                 btnDisconnectDevice.setEnabled(true);
                // btnEncrypt.setEnabled(true);
                 btnDecrypt.setEnabled(true);
-
 
             } catch ( IOException io ) {
                 btToastLabel = "Unable to connect to USB_KEY";
@@ -260,8 +282,7 @@ public class MainActivity extends Activity {
         }
     };
 
-    protected void initiate_bt_connection() throws IOException
-    {
+    protected void initiate_bt_connection() throws IOException {
 
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard SerialPortService ID
         btSocket = btDevice.createRfcommSocketToServiceRecord(uuid);
@@ -276,40 +297,32 @@ public class MainActivity extends Activity {
         bluetooth_connected_status = 1;
     }
 
-    void beginListenForData()
-    {
+    void beginListenForData() {
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
 
         stopWorker = false;
         readBufferPosition = 0;
         readBuffer = new byte[1024];
-        workerThread = new Thread(new Runnable()
-        {
-            public void run()
-            {
-                while(!Thread.currentThread().isInterrupted() && !stopWorker)
-                {
-                    try
-                    {
+
+        // Defining a worker thread by passing in a Runnable object of which code will run within the thread
+        workerThread = new Thread(new Runnable() {
+            public void run() {
+                while(!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    try {
                         int bytesAvailable = btInputStream.available();
-                        if(bytesAvailable > 0)
-                        {
+                        if(bytesAvailable > 0) {
                             byte[] packetBytes = new byte[bytesAvailable];
                             btInputStream.read(packetBytes);
-                            for(int i=0;i<bytesAvailable;i++)
-                            {
+                            for(int i=0;i<bytesAvailable;i++) {
                                 byte b = packetBytes[i];
-                                if(b == delimiter)
-                                {
+                                if(b == delimiter) {
                                     byte[] encodedBytes = new byte[readBufferPosition];
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, "US-ASCII");
                                     readBufferPosition = 0;
-                                    handler.post(new Runnable()
-                                    {
-                                        public void run()
-                                        {
+                                    handler.post(new Runnable() {
+                                        public void run() {
                                             btToastLabel = data;
                                             if ( data.equals("samantha")) {
                                                 ///
@@ -318,16 +331,13 @@ public class MainActivity extends Activity {
                                             }
                                         }
                                     });
-                                }
-                                else
-                                {
+                                } else {
                                     readBuffer[readBufferPosition++] = b;
                                 }
                             }
                         }
                     }
-                    catch (IOException ex)
-                    {
+                    catch (IOException ex) {
                         stopWorker = true;
                     }
                 }
@@ -337,8 +347,7 @@ public class MainActivity extends Activity {
         workerThread.start();
     }
 
-    void sendData(EditText textToDev) throws IOException
-    {
+    void sendData(EditText textToDev) throws IOException {
 
         String msg = textToDev.getText().toString();
 
@@ -350,36 +359,17 @@ public class MainActivity extends Activity {
         Toast.makeText(getApplicationContext(), btToastLabel,
                 Toast.LENGTH_LONG).show();
 
-
         lockStatus.setBackgroundResource(R.drawable.unlock);
 
         bluetoothAdapter.startDiscovery();
 
     }
 
-    void closeBT() throws IOException
-    {
-        stopWorker = true;
-        btOutputStream.close();
-        btInputStream.close();
-        btSocket.close();
-        btToastLabel = "Disconnected from USB_KEY";
-        Toast.makeText(getApplicationContext(), btToastLabel,
-                Toast.LENGTH_LONG).show();
-        bluetooth_connected_status = 0;
-        bluetooth_found_status = 0;
-
-        lockStatus.setBackgroundResource(R.drawable.lock);
-
-    }
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
-        if(requestCode == REQUEST_ENABLE_BT)
-        {
-            CheckBlueToothState();
+        if(requestCode == REQUEST_ENABLE_BT) {
+            checkBluetoothState();
         }
     }
 
