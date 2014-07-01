@@ -33,7 +33,7 @@
     android:layout_height="50dp"
     android:text="Connect"
     android:enabled="true"
-    android:singleLine="false" android:background="@drawable/roundedbuttonshape" android:clickable="false" android:typeface="sans"
+    android:singleLine="false" android:background="@drawable/red_button" android:clickable="false" android:typeface="sans"
     android:layout_gravity="center_horizontal"
     android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
     android:textStyle="bold"/>
@@ -44,7 +44,7 @@
             android:layout_height="50dp"
             android:text="Disconnect"
             android:enabled="true"
-            android:singleLine="false" android:background="@drawable/roundedbuttonshape" android:clickable="false" android:typeface="sans"
+            android:singleLine="false" android:background="@drawable/red_button" android:clickable="false" android:typeface="sans"
             android:layout_gravity="center_horizontal"
             android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
             android:textStyle="bold"
@@ -68,29 +68,45 @@
             android:layout_height="50dp"
             android:text="Decrypt"
             android:enabled="false"
-            android:singleLine="false" android:background="@drawable/roundedbuttonshape2" android:clickable="false" android:typeface="sans"
+            android:singleLine="false" android:background="@drawable/green_button" android:clickable="false" android:typeface="sans"
             android:layout_gravity="center_horizontal"
             android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
             android:textStyle="bold"
             />
 
-    <Button
+   <!-- <Button
             android:id="@+id/btnsilenceNotifications"
             android:layout_width="285dp"
             android:layout_height="50dp"
             android:text="Turn off Notifications"
             android:enabled="false"
-            android:singleLine="false" android:background="@drawable/roundedbuttonshape3" android:clickable="false" android:typeface="sans"
+            android:singleLine="false" android:background="@drawable/blue_button" android:clickable="false" android:typeface="sans"
             android:layout_gravity="center_horizontal"
             android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
             android:textStyle="bold"
+            /> -->
+    <ToggleButton
+            android:id="@+id/togglebutton"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="Notifications On"
+            android:textOff="Notifications Off"
+            android:onClick="onToggleClicked"/>
+
+
+    <TextView
+            android:id="@+id/rssiValueDisplay"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             />
 
 
 
     <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:id="@+id/lockStatusView" android:layout_gravity="center_horizontal" android:layout_marginTop="50dp"
             android:background="@drawable/lock" android:baselineAlignBottom="true"/>
     <!-- <EditText

@@ -1,6 +1,7 @@
 package com.example.usb_key;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -8,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -18,7 +20,6 @@ import android.widget.*;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +38,6 @@ public class MainActivity extends Activity {
     BluetoothSocket btSocket;
     BluetoothDevice btDevice;
 
-    Bluetooth_Class Bluetooth_Instance;
-
     OutputStream btOutputStream;
     InputStream btInputStream;
     Thread workerThread;
@@ -46,6 +45,7 @@ public class MainActivity extends Activity {
     int readBufferPosition;
     volatile boolean stopWorker;
 
+    int silenced = 0;
     int REQUEST_ENABLE_BT = 1;
     String TAG = "george_debug"; // This is a debug tag used to filter debug messages
     String MAC_ADDR = "00:13:EF:00:08:F7"; // This is BT Bee
@@ -56,10 +56,12 @@ public class MainActivity extends Activity {
 
     Button btnConnectDevice;
     TextView stateBluetooth;
+
     Button btnDisconnectDevice;
     Button btnDecrypt;
-    Button btnsilenceNotifications;
     ImageView lockStatus;
+
+
 
     /**
      * End of Variable and type declaration
@@ -81,7 +83,6 @@ public class MainActivity extends Activity {
             btnDisconnectDevice = (Button)findViewById(R.id.disconnectdev);
             //btnEncrypt = (Button)findViewById(R.id.btnencrypt);
             btnDecrypt = (Button)findViewById(R.id.btndecrypt);
-            btnsilenceNotifications = (Button)findViewById(R.id.btnsilenceNotifications);
 
             // Linking Textview to it's respective resource ids
             stateBluetooth = (TextView)findViewById(R.id.bluetoothstate);
@@ -96,11 +97,9 @@ public class MainActivity extends Activity {
          * Ending of linking view objects
          */
 
-        // Instantiate Bluetooth Class and functions once
-        Bluetooth_Instance = new Bluetooth_Class();
 
         // Set the Bluetooth Adapter
-        bluetoothAdapter = Bluetooth_Instance.getBluetoothAdapter();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Invoke function to check bluetooth state
         checkBluetoothState();
@@ -109,7 +108,7 @@ public class MainActivity extends Activity {
         btnConnectDevice.setOnClickListener(btnConnectDeviceOnClickListener);
         btnDisconnectDevice.setOnClickListener(btnDisconnectDeviceOnClickListener);
         btnDecrypt.setOnClickListener(btnDecryptOnClickListener);
-        btnsilenceNotifications.setOnClickListener(btnsilenceNotificationsOnClickListener);
+
 
         // Registering Custom Broadcast Receiver functions for intent
         registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
@@ -125,6 +124,25 @@ public class MainActivity extends Activity {
         // TODO Auto-generated method stub
         super.onDestroy();
 
+    }
+
+    public void onToggleClicked(View view) {
+        // Is the toggle on?
+        boolean on = ((ToggleButton) view).isChecked();
+
+        if (on) {
+            // Enable vibrate
+            AudioManager aManager=(AudioManager)getSystemService(AUDIO_SERVICE);
+            aManager.setRingerMode(aManager.RINGER_MODE_NORMAL);
+            silenced = 0;
+            Log.d(TAG,"Toggle On");
+        } else {
+            // Disable vibrate
+            AudioManager aManager=(AudioManager)getSystemService(AUDIO_SERVICE);
+            aManager.setRingerMode(aManager.RINGER_MODE_SILENT);
+            silenced = 1;
+            Log.d(TAG,"Toggle Off");
+        }
     }
 
     private void checkBluetoothState(){
@@ -181,27 +199,6 @@ public class MainActivity extends Activity {
 
         }
     };
-
-    private Button.OnClickListener btnsilenceNotificationsOnClickListener = new Button.OnClickListener() {
-
-        @Override
-        public void onClick(View arg0) {
-
-            try {
-                silenceNotification();
-            } catch ( IOException btnsilenceNotificationsException ) {
-                btToastLabel = "Unable to toggle this option";
-                Toast.makeText(getApplicationContext(), btToastLabel, Toast.LENGTH_LONG).show();
-            }
-        }
-
-    };
-
-    void silenceNotification() throws IOException {
-        // silence notifications here
-        // change button text
-
-    }
 
     private Button.OnClickListener btnDisconnectDeviceOnClickListener = new Button.OnClickListener() {
 
@@ -389,14 +386,18 @@ public class MainActivity extends Activity {
                     Log.d(TAG, "Detected USB_KEY");
                     Log.v(TAG, "RSSI is " + rssi);
                     bluetooth_found_distance = rssi;
-                    if ((-50) - rssi > 17) {
+                    if ((-50) - rssi > -10) {
                         bluetooth_found_status = 0;
 
                         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                         r.play();
                         Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                        v.vibrate(5000);
+                        if ( silenced == 0 ) {
+                            v.vibrate(5000);
+                        } else {
+                            v.cancel();
+                        }
                         Toast.makeText(getApplicationContext(), "USB_KEY is either out of range or cannot be detected! It's last detected distance is " + bluetooth_found_distance, Toast.LENGTH_SHORT).show();
 
                         //bluetoothAdapter.cancelDiscovery();
@@ -404,7 +405,6 @@ public class MainActivity extends Activity {
                     } else {
                         bluetooth_found_status = 1;
                         Toast.makeText(getApplicationContext(), "USB_KEY detected RSSI:" + rssi, Toast.LENGTH_SHORT).show();
-
                         bluetoothAdapter.cancelDiscovery();
                     }
                 }
