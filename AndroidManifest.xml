@@ -22,5 +22,7 @@
                 <action android:name="android.bluetooth.device.action.ACTION_DISCOVERY_FINISHED" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.usb_key.UsbKeySearch"
+                  android:label="UsbKeySearchRadar" />
     </application>
 </manifest>

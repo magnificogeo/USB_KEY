@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#2C3D4F"
+    android:background="#ff668ea6"
     >
 
     <!-- //android:background="#06A8F0" -->
@@ -50,17 +50,17 @@
             android:textStyle="bold"
             />
 
-    <!-- <Button
+     <Button
             android:id="@+id/btnencrypt"
             android:layout_width="285dp"
             android:layout_height="50dp"
-            android:text="Encrypt"
-            android:enabled="false"
-            android:singleLine="false" android:background="@drawable/roundedbuttonshape2" android:clickable="false" android:typeface="sans"
+            android:text="Find USB Key!"
+            android:enabled="true"
+            android:singleLine="false" android:background="@drawable/blue_button" android:clickable="false" android:typeface="sans"
             android:layout_gravity="center_horizontal"
             android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
             android:textStyle="bold"
-            /> -->
+            />
 
     <Button
             android:id="@+id/btndecrypt"
@@ -74,17 +74,18 @@
             android:textStyle="bold"
             />
 
-   <!-- <Button
-            android:id="@+id/btnsilenceNotifications"
+    <!--- <Button
+            android:id="@+id/btnsearchUSBKey"
             android:layout_width="285dp"
             android:layout_height="50dp"
-            android:text="Turn off Notifications"
+            android:text="Find your USB Key"
             android:enabled="false"
             android:singleLine="false" android:background="@drawable/blue_button" android:clickable="false" android:typeface="sans"
             android:layout_gravity="center_horizontal"
             android:shadowColor="#ff8452" android:layout_marginTop="12dp" android:textColor="#ececec"
             android:textStyle="bold"
             /> -->
+
     <ToggleButton
             android:id="@+id/togglebutton"
             android:layout_gravity="center_horizontal"
