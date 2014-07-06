@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#ff668ea6"
+    android:background="#fff4e7b9"
     >
 
     <!-- //android:background="#06A8F0" -->

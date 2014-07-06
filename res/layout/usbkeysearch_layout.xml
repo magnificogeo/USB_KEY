@@ -3,6 +3,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="#fff4e7b9">
 
+    <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:id="@+id/signalStatus" android:layout_gravity="center_horizontal" android:layout_marginTop="50dp"
+            android:background="@drawable/signal_zero" android:baselineAlignBottom="true"/>
 </LinearLayout>

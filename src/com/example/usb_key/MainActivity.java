@@ -45,11 +45,12 @@ public class MainActivity extends Activity {
     int silenced = 0;
     int REQUEST_ENABLE_BT = 1;
     String TAG = "george_debug"; // This is a debug tag used to filter debug messages
-    String MAC_ADDR = "00:13:EF:00:08:F7"; // This is BT Bee
+    static String MAC_ADDR = "00:13:EF:00:08:F7"; // This is BT Bee
     //String MAC_ADDR = "78:9E:D0:64:07:A8"; // This is Galaxy Note 10.1
     int bluetooth_found_status = 0;
     short bluetooth_found_distance = 0;
     int bluetooth_connected_status = 0;
+    static int rssi_value = 0;
 
     Button btnConnectDevice;
     TextView stateBluetooth;
@@ -103,6 +104,10 @@ public class MainActivity extends Activity {
 
         // Start Bluetooth Discovery
         bluetoothAdapter.startDiscovery();
+
+        // Enable vibrate
+        AudioManager aManager=(AudioManager)getSystemService(AUDIO_SERVICE);
+        aManager.setRingerMode(aManager.RINGER_MODE_NORMAL);
 
     }
 
@@ -373,22 +378,23 @@ public class MainActivity extends Activity {
                     Log.d(TAG, "Detected USB_KEY");
                     Log.v(TAG, "RSSI is " + rssi);
                     bluetooth_found_distance = rssi;
-                    if ((-50) - rssi > -10) {
+                    rssi_value = rssi; // set static rssi value
+                    if ((-rssi) >= 80) {
                         bluetooth_found_status = 0;
                         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                         r.play();
                         Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                        if ( silenced == 0 ) {
-                            v.vibrate(5000);
-                        } else {
-                            v.cancel();
-                        }
+                            if ( silenced == 0 ) {
+                                v.vibrate(5000);
+                            } else {
+                                v.cancel();
+                            }
                         Toast.makeText(getApplicationContext(), "USB_KEY is either out of range or cannot be detected! It's last detected distance is " + bluetooth_found_distance, Toast.LENGTH_SHORT).show();
                         //bluetoothAdapter.cancelDiscovery();
                     } else {
                         bluetooth_found_status = 1;
-                        Toast.makeText(getApplicationContext(), "USB_KEY detected RSSI:" + rssi, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "USB_KEY detected RSSI:" + (-rssi), Toast.LENGTH_SHORT).show();
                         bluetoothAdapter.cancelDiscovery();
                     }
                 }
@@ -415,5 +421,9 @@ public class MainActivity extends Activity {
 
         }
     };
+
+    public static int get_rssi_value() {
+        return -rssi_value;
+    }
 
 }
